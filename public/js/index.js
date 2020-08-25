@@ -65,7 +65,6 @@ if (document.querySelector('.form.form-user-settings'))
 
 if (document.getElementById('book-tour')) {
   const { bookTour } = require('./stripePayments');
-  console.log(document.getElementById('book-tour'));
   document.getElementById('book-tour').addEventListener('click', e => {
     e.target.textContent = 'Processing...';
     const { tourId } = e.target.dataset;

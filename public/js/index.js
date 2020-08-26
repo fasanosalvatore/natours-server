@@ -4,7 +4,7 @@ import '@babel/polyfill';
 import { login, logout } from './login';
 import { updateData } from './updateSettings';
 import { displayMap } from './mapbox';
-import { showAlert } from 'alert';
+import { showAlert } from './alert';
 
 const logOutBtn = document.querySelector('.nav__el.nav__el--logout');
 

@@ -12,6 +12,9 @@ html
 
     include _header
 
+    if(user && !user.confirmed)
+        .error-banner Check your email to confirm your account
+
     block content
 
     include _footer

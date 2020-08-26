@@ -1,0 +1,15 @@
+extends baseEmail
+
+block content
+  p Hi #{firstName},
+  p L'ultima cosa da fare prima di poter prenotare dei tour tramite il nostro sito web è controllare il seguente link: #{url}.
+  table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
+    tbody
+      tr
+        td(align='left')
+          table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+            tbody
+              tr
+                td
+                  a(href=`${url}`, target='_blank') Confirm Account
+  p Se non hai effettuato la registrazione, ignora questa mail!

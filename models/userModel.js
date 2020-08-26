@@ -103,6 +103,19 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   return false;
 };
 
+userSchema.methods.createConfirmationToken = function() {
+  const userConfirmationToken = crypto.randomBytes(32).toString('hex');
+
+  this.confirmationToken = crypto
+    .createHash('sha256')
+    .update(userConfirmationToken)
+    .digest('hex');
+
+  this.confirmationTokenExpires = Date.now() + 10 * 60 * 1000;
+
+  return userConfirmationToken;
+};
+
 userSchema.methods.createPasswordResetToken = function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
 

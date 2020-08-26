@@ -14,7 +14,7 @@ export async function signup(name, email, password, passwordConfirm) {
         passwordConfirm
       }
     });
-    showAlert('success', 'Account created succesfully');
+    showAlert('success', 'Check your email to confirm tour accout!');
     window.setTimeout(() => {
       location.assign('/');
     }, 1500);

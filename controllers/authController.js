@@ -266,9 +266,10 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 exports.logout = (req, res) => {
-  res.cookie('jwt', 'loggedout', {
-    expiresIn: new Date(Date.now() + 10 * 1000),
-    httpOnly: true
-  });
+  // res.cookie('jwt', 'loggedout', {
+  //   expiresIn: new Date(Date.now() + 10 * 1000),
+  //   httpOnly: true
+  // });
+  res.clearCookie('jwt');
   res.status(200).json({ status: 'success' });
 };

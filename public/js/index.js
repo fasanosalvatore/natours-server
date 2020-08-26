@@ -4,6 +4,7 @@ import '@babel/polyfill';
 import { login, logout } from './login';
 import { updateData } from './updateSettings';
 import { displayMap } from './mapbox';
+import { showAlert } from 'alert';
 
 const logOutBtn = document.querySelector('.nav__el.nav__el--logout');
 
@@ -71,3 +72,6 @@ if (document.getElementById('book-tour')) {
     bookTour(tourId);
   });
 }
+
+const alertMessage = document.querySelector('.body').dataset.alert;
+if (alertMessage) showAlert('success', alertMessage, 10);

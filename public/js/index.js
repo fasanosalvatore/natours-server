@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import '@babel/polyfill';
 
-import { login, logout } from './login';
+import { login, logout, signup } from './auth';
 import { updateData } from './updateSettings';
 import { displayMap } from './mapbox';
 import { showAlert } from './alert';
@@ -17,12 +17,24 @@ if (document.getElementById('map')) {
   displayMap(locations);
 }
 
-if (document.querySelector('.login-form .form'))
-  document.querySelector('.login-form .form').addEventListener('submit', e => {
+if (document.querySelector('#login .form'))
+  document.querySelector('#login .form').addEventListener('submit', e => {
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     login(email, password);
+  });
+
+if (document.querySelector('#signup .form'))
+  document.querySelector('#signup .form').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    if (password === confirmPassword)
+      signup(name, email, password, confirmPassword);
+    else showAlert('error', 'Password and confirm password must be equal');
   });
 
 if (document.querySelector('.form.form-user-data'))

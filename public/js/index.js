@@ -74,4 +74,4 @@ if (document.getElementById('book-tour')) {
 }
 
 if (document.querySelector('body').dataset.alert)
-  showAlert('success', document.querySelector('body').dataset.alert, 10);
+  showAlert('success', document.querySelector('body').dataset.alert, 12);

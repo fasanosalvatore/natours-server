@@ -1322,3 +1322,18 @@ body {
   -webkit-transform: translateY(-2px);
   transform: translateY(-2px);
 }
+
+.error-banner {
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    from(#ff7730),
+    to(#eb4d4b)
+  );
+  background-image: linear-gradient(to right, #ff7730, #eb4d4b);
+  text-align: center;
+  color: white;
+  font-size: 1.5rem;
+  padding: 1rem 0;
+}

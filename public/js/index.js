@@ -30,11 +30,18 @@ if (document.querySelector('#signup .form'))
     e.preventDefault();
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-    if (password === confirmPassword)
-      signup(name, email, password, confirmPassword);
-    else showAlert('error', 'Password and confirm password must be equal');
+
+    signup(
+      document.querySelector('#signup .form'),
+      name,
+      email,
+      phone,
+      password,
+      confirmPassword
+    );
   });
 
 if (document.querySelector('.form.form-user-data'))

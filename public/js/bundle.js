@@ -8392,6 +8392,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.signup = signup;
+exports.confirmNumber = confirmNumber;
 exports.login = login;
 exports.logout = logout;
 
@@ -8405,13 +8406,13 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-function signup(_x, _x2, _x3, _x4) {
+function signup(_x, _x2, _x3, _x4, _x5, _x6) {
   return _signup.apply(this, arguments);
 }
 
 function _signup() {
-  _signup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, email, password, passwordConfirm) {
-    var res;
+  _signup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(form, name, email, phone, password, passwordConfirm) {
+    var res, markup;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -8424,6 +8425,7 @@ function _signup() {
               data: {
                 name: name,
                 email: email,
+                phone: phone,
                 password: password,
                 passwordConfirm: passwordConfirm
               }
@@ -8432,33 +8434,39 @@ function _signup() {
           case 3:
             res = _context.sent;
             (0, _alert.showAlert)('success', 'Check your email to confirm tour accout!');
-            window.setTimeout(function () {
-              location.assign('/');
-            }, 1500);
-            _context.next = 11;
+            markup = "<div class=\"form\"><div class=\"form__group\">\n        <label for=\"totpToken\" class=\"form__label\">Codice Verifica SMS</label>\n        <input type=\"numeric\" id=\"totpToken\" class=\"form__input\" />\n      </div>\n      <div class=\"form__group\">\n        <button id=\"totp\" class=\"btn btn--green\">Conferma</button>\n      </div></div>";
+            form.insertAdjacentHTML('beforebegin', markup);
+            form.remove();
+            document.querySelector('#totp').addEventListener('click', function (e) {
+              e.preventDefault();
+              var totpToken = document.querySelector('#totpToken').value;
+              console.log(totpToken);
+              confirmNumber(totpToken);
+            });
+            _context.next = 14;
             break;
 
-          case 8:
-            _context.prev = 8;
+          case 11:
+            _context.prev = 11;
             _context.t0 = _context["catch"](0);
             (0, _alert.showAlert)('error', _context.t0.response.data.message);
 
-          case 11:
+          case 14:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 8]]);
+    }, _callee, null, [[0, 11]]);
   }));
   return _signup.apply(this, arguments);
 }
 
-function login(_x5, _x6) {
-  return _login.apply(this, arguments);
+function confirmNumber(_x7) {
+  return _confirmNumber.apply(this, arguments);
 }
 
-function _login() {
-  _login = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(email, password) {
+function _confirmNumber() {
+  _confirmNumber = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(totpToken) {
     var res;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -8467,17 +8475,16 @@ function _login() {
             _context2.prev = 0;
             _context2.next = 3;
             return (0, _axios.default)({
-              method: 'POST',
-              url: '/api/v1/users/login',
+              method: 'PATCH',
+              url: '/api/v1/users/confirmNumber',
               data: {
-                email: email,
-                password: password
+                totpToken: totpToken
               }
             });
 
           case 3:
             res = _context2.sent;
-            (0, _alert.showAlert)('success', 'Logged in succesfully');
+            (0, _alert.showAlert)('success', 'Your number is corrected confirmed!');
             window.setTimeout(function () {
               location.assign('/');
             }, 1500);
@@ -8496,6 +8503,52 @@ function _login() {
       }
     }, _callee2, null, [[0, 8]]);
   }));
+  return _confirmNumber.apply(this, arguments);
+}
+
+function login(_x8, _x9) {
+  return _login.apply(this, arguments);
+}
+
+function _login() {
+  _login = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(email, password) {
+    var res;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return (0, _axios.default)({
+              method: 'POST',
+              url: '/api/v1/users/login',
+              data: {
+                email: email,
+                password: password
+              }
+            });
+
+          case 3:
+            res = _context3.sent;
+            (0, _alert.showAlert)('success', 'Logged in succesfully');
+            window.setTimeout(function () {
+              location.assign('/');
+            }, 1500);
+            _context3.next = 11;
+            break;
+
+          case 8:
+            _context3.prev = 8;
+            _context3.t0 = _context3["catch"](0);
+            (0, _alert.showAlert)('error', _context3.t0.response.data.message);
+
+          case 11:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, null, [[0, 8]]);
+  }));
   return _login.apply(this, arguments);
 }
 
@@ -8504,33 +8557,33 @@ function logout() {
 }
 
 function _logout() {
-  _logout = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+  _logout = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
     var res;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _context3.prev = 0;
-            _context3.next = 3;
+            _context4.prev = 0;
+            _context4.next = 3;
             return _axios.default.get('/api/v1/users/logout');
 
           case 3:
-            res = _context3.sent;
+            res = _context4.sent;
             if (res.data.status === 'success') location.assign('/');
-            _context3.next = 10;
+            _context4.next = 10;
             break;
 
           case 7:
-            _context3.prev = 7;
-            _context3.t0 = _context3["catch"](0);
+            _context4.prev = 7;
+            _context4.t0 = _context4["catch"](0);
             (0, _alert.showAlert)('error', 'Error logging out, try again!');
 
           case 10:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3, null, [[0, 7]]);
+    }, _callee4, null, [[0, 7]]);
   }));
   return _logout.apply(this, arguments);
 }
@@ -8981,9 +9034,10 @@ if (document.querySelector('#signup .form')) document.querySelector('#signup .fo
   e.preventDefault();
   var name = document.getElementById('name').value;
   var email = document.getElementById('email').value;
+  var phone = document.getElementById('phone').value;
   var password = document.getElementById('password').value;
   var confirmPassword = document.getElementById('confirmPassword').value;
-  if (password === confirmPassword) (0, _auth.signup)(name, email, password, confirmPassword);else (0, _alert.showAlert)('error', 'Password and confirm password must be equal');
+  (0, _auth.signup)(document.querySelector('#signup .form'), name, email, phone, password, confirmPassword);
 });
 if (document.querySelector('.form.form-user-data')) document.querySelector('.form.form-user-data').addEventListener('submit', /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(e) {
@@ -9095,7 +9149,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62551" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58411" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -6,11 +6,14 @@ block content
       h2.heading-secondary.ma-bt-lg Create new account
       form.form
         .form__group
-          label.form__label(for='name') Email address
+          label.form__label(for='name') Name
           input#name.form__input(type='text', placeholder='Name', required)
         .form__group
           label.form__label(for='email') Email address
           input#email.form__input(type='email', placeholder='you@example.com', required)
+        .form__group
+          label.form__label(for='phone') Phone Number
+          input#phone.form__input(type='tel', placeholder='0000000000', required)
         .form__group.ma-bt-md
           label.form__label(for='password') Password
           input#password.form__input(type='password', placeholder='••••••••', required, minlength='8')

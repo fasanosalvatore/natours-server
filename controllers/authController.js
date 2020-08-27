@@ -5,6 +5,7 @@ const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const Email = require('./../utils/email');
+const sms = require('./../utils/sms');
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -38,17 +39,19 @@ const createSendToken = (user, statusCode, req, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
-  const confirmToken = newUser.createConfirmationToken();
+  const { confirmToken, totpToken } = newUser.createConfirmationToken();
   await newUser.save({ validateBeforeSave: false });
   // 3) Send it to user's email
   const confirmURL = `${req.protocol}://${req.get(
     'host'
   )}/api/v1/users/confirmSignup/${confirmToken}`;
   await new Email(newUser, confirmURL).sendConfirmation();
-  res.status(200).json({
-    status: 'success',
-    message: 'Sending confirmation mail!'
-  });
+  await sms.sendSms(newUser, totpToken);
+  // res.status(200).json({
+  //   status: 'success',
+  //   message: 'Sending confirmation mail!'
+  // });
+  createSendToken(newUser, 200, req, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -101,7 +104,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  if (!currentUser.confirmed) {
+  if (!currentUser.confirmed && !req.originalUrl.includes('confirmNumber')) {
     return next(new AppError('You have to confirm your email', 401));
   }
 
@@ -206,7 +209,7 @@ exports.confirmAccount = catchAsync(async (req, res, next) => {
     return next(new AppError('Token is invalid or has expired', 400));
   }
 
-  user.confirmed = true;
+  user.emailConfirmed = true;
   user.confirmationToken = undefined;
   user.confirmationTokenExpires = undefined;
   await user.save({ validateBeforeSave: false });
@@ -217,6 +220,34 @@ exports.confirmAccount = catchAsync(async (req, res, next) => {
   await new Email(user, url).sendWelcome();
   // createSendToken(user, 200, req, res);
   res.redirect(`${req.protocol}://${req.get('host')}/login`);
+});
+
+exports.confirmNumber = catchAsync(async (req, res, next) => {
+  // 1) Get user based on the token
+  const { totpToken } = req.body;
+
+  // const user = await User.findOne({
+  //   numberConfirmationTotp: totpToken
+  // });
+  // // 2) If token has not expired, and there is user, set the new password
+  // if (!user) {
+  //   return next(new AppError('Token is invalid or has expired', 400));
+  // }
+  if (req.user.numberConfirmed)
+    return next(new AppError('Phone number already confirmed', 500));
+
+  if (!req.user.verifyTotp(totpToken)) {
+    return next(new AppError('Token is invalid or has expired', 400));
+  }
+
+  req.user.numberConfirmed = true;
+  req.user.numberConfirmationTotp = undefined;
+  await req.user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Phone number is confirmed'
+  });
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {

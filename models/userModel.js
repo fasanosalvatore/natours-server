@@ -2,6 +2,8 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+//const OTPAuth = require('otpauth');
+const speakeasy = require('speakeasy');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -14,6 +16,10 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email']
+  },
+  phone: {
+    type: String,
+    required: [true, 'Please provide your phone number']
   },
   photo: {
     type: String,
@@ -41,12 +47,17 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same!'
     }
   },
-  confirmed: {
+  emailConfirmed: {
+    type: Boolean,
+    default: false
+  },
+  numberConfirmed: {
     type: Boolean,
     default: false
   },
   confirmationToken: String,
   confirmationTokenExpires: Date,
+  numberConfirmationTotp: String,
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
@@ -105,6 +116,11 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
 userSchema.methods.createConfirmationToken = function() {
   const userConfirmationToken = crypto.randomBytes(32).toString('hex');
+  const secret = speakeasy.generateSecret();
+  const totpToken = speakeasy.totp({
+    secret: secret.base32,
+    encoding: 'base32'
+  });
 
   this.confirmationToken = crypto
     .createHash('sha256')
@@ -112,8 +128,19 @@ userSchema.methods.createConfirmationToken = function() {
     .digest('hex');
 
   this.confirmationTokenExpires = Date.now() + 10 * 60 * 1000;
+  this.numberConfirmationTotp = secret.base32;
 
-  return userConfirmationToken;
+  return { confirmToken: userConfirmationToken, totpToken };
+};
+
+userSchema.methods.verifyTotp = function(totpToken) {
+  const validate = speakeasy.totp.verify({
+    secret: this.numberConfirmationTotp,
+    encoding: 'base32',
+    token: totpToken,
+    window: 6
+  });
+  return validate;
 };
 
 userSchema.methods.createPasswordResetToken = function() {
